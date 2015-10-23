@@ -1,0 +1,23 @@
+<div class="form-group">
+  <%= label field.to_sym, field.to_sym, :class => "col-sm-3 control-label" %>
+
+  <div class="col-sm-7">
+    <% if item[:editable] %>
+      <%= text_field_tag("#{@model_name}[#{field}]", value, :class => "form-control") %>
+    <% else %>
+      <%= value %>
+    <% end %>
+  </div>
+
+  <% if false %>
+    <% case item[:type] %>
+  <% when :string, :datetime %>
+      <%= text_field_tag(field) %>
+    <% when :integer %>
+      <%= number_field_tag(name) %>
+    <% else %>
+      <%= text_field_tag(name) %>
+    <% end %>
+  <% end %>
+
+</div>

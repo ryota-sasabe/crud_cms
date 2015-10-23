@@ -1,2 +1,17 @@
 <h1>Crud#new</h1>
 <p>Find me in app/views/crud/new.html.erb</p>
+
+<div class="form-horizontal" role="form">
+  <%= form_tag("/#{@database}/#{@table}/create", method: 'post') do %>
+
+    <% @fields.each do |field, item| %>
+      <% next if field.in?(['id', 'created_at', 'updated_at']) %>
+
+      <%= render partial: "crud/form", locals: {action: :new, field: field, item: item, value: ''} %>
+
+    <% end %>
+
+    <td><%= submit_tag("登録") %></td>
+
+  <% end %>
+</div>

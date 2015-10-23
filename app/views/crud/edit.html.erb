@@ -1,2 +1,19 @@
 <h1>Crud#edit</h1>
 <p>Find me in app/views/crud/edit.html.erb</p>
+
+<%= p(@data.inspect) %>
+
+<div class="form-horizontal" role="form">
+<%= form_tag("/#{@database}/#{@table}/#{@id}/update", method: 'patch') do %>
+
+  <% @fields.each do |field, item| %>
+
+    <% value = eval('@data.' + field) %>
+    <%= render partial: "crud/form", locals: {action: :edit, field: field, item: item, value: value} %>
+
+  <% end %>
+
+  <td><%= submit_tag("登録") %></td>
+
+  <% end %>
+</div>

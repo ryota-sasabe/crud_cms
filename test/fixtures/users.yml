@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Ryota Sasabe
+  email: saytrm@gmail.com
+
+two:
+  name: Taro Yamada
+  email: taro@gmail.com
+
+three:
+  name: Hanako Sato
+  email: hanako@gmail.com
+
+four:
+  name: Ichiro Tanaka
+  email: ichiro@gmail.com
+
+five:
+  name: Jiro Suzuki
+  email: jiro@gmail.com
+
+six:
+  name: Saburo Saito
+  email: saburo@gmail.com

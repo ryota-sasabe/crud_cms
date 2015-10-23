@@ -1,0 +1,72 @@
+<h1>Crud#index</h1>
+
+<%= p(@cond) %>
+
+<h2>テーブルのデータ</h2>
+
+<%= form_tag("/crud/#{@table}", method: 'get') do %>
+<table class="table table-striped">
+  <tr>
+    <th>選択</th>
+    <% @fields.keys.each do |field| %>
+        <th><%= field %></th>
+    <% end %>
+  </tr>
+
+  <tr>
+    <td><%= submit_tag("Search") %></td>
+    <% @fields.each do |field, item| %>
+        <td>
+          <% name = 'search[' + field + ']' %>
+          <% case item[:type] %>
+          <% when :string, :datetime %>
+              <%= text_field_tag(name) %>
+          <% when :integer %>
+              <%= number_field_tag(name) %>
+          <% else %>
+              <%= text_field_tag(name) %>
+          <% end %>
+
+        </td>
+    <% end %>
+  </tr>
+
+
+
+<% @data.each do |item| %>
+    <tr>
+      <td>[ ]</td>
+    <% @fields.keys.each do |field| %>
+        <td>
+          <% value = eval('item.' + field) %>
+          <% if field == 'id' %>
+              <%= value %>
+          <% else %>
+              <%= value %>
+          <% end %>
+        </td>
+    <% end %>
+    </tr>
+  <% end %>
+</table>
+
+<% end #/form_tag %>
+
+
+<h2>テーブル定義情報</h2>
+
+<table class="table table-striped">
+  <tr>
+    <% @column_properties.each do |property| %>
+        <th><%= property %></th>
+    <% end %>
+  </tr>
+
+  <% @columns.each do |item| %>
+      <tr>
+        <% @column_properties.each do |property| %>
+            <td><%= eval('item.' + property) %></td>
+        <% end %>
+      </tr>
+  <% end %>
+</table>

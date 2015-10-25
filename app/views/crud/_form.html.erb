@@ -1,23 +1,71 @@
-<div class="form-group">
-  <%= label field.to_sym, field.to_sym, :class => "col-sm-3 control-label" %>
+<div class="form-horizontal" role="form">
 
-  <div class="col-sm-7">
-    <% if item[:editable] %>
-      <%= text_field_tag("#{@model_name}[#{field}]", value, :class => "form-control") %>
-    <% else %>
-      <%= value %>
-    <% end %>
-  </div>
+  <%
+     case action
+       when :new
+         form_method = 'post'
+         form_action = 'create'
+       when :edit
+         form_method = 'patch'
+         form_action = 'update'
+    end
+  %>
 
-  <% if false %>
-    <% case item[:type] %>
-  <% when :string, :datetime %>
-      <%= text_field_tag(field) %>
-    <% when :integer %>
-      <%= number_field_tag(name) %>
-    <% else %>
-      <%= text_field_tag(name) %>
+  <%= form_tag("/#{@database}/#{@table}/#{@id}/#{form_action}", method: form_method ) do %>
+
+    <%# エラーメッセージ %>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-10">
+        <% if @data.errors.any? %><h4>入力に誤りがあります。</h4>
+          <ul class="error_messages">
+            <% @data.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 入力項目 %>
+    <% @fields.each do |field, item| %>
+
+      <% if action == :new %>
+        <% next if field.in?(['id', 'created_at', 'updated_at']) %>
+        <% value = '' %>
+      <% elsif action == :edit %>
+        <% value = eval('@data.' + field) %>
+      <% end %>
+
+
+      <div class="form-group">
+        <%= label field.to_sym, field.to_sym, :class => "col-sm-3 control-label" %>
+
+        <div class="col-sm-7">
+          <% if item[:editable] %>
+            <%= text_field_tag("#{@model_name}[#{field}]", value, :class => "form-control") %>
+          <% else %>
+            <%= value %>
+          <% end %>
+        </div>
+
+        <% if false %>
+          <% case item[:type] %>
+        <% when :string, :datetime %>
+            <%= text_field_tag(field) %>
+          <% when :integer %>
+            <%= number_field_tag(name) %>
+          <% else %>
+            <%= text_field_tag(name) %>
+          <% end %>
+        <% end %>
+
+      </div>
+
     <% end %>
+
+    <td><%= submit_tag("登録") %></td>
+
   <% end %>
-
 </div>
+
+

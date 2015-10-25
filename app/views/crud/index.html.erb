@@ -1,8 +1,8 @@
-<h1>Crud#index</h1>
+<h2><%= @table %> データ一覧</h2>
 
 <p><%= link_to '新規登録', :controller => "crud", :action => "new" %></p>
 
-<h2>テーブルのデータ</h2>
+<%#= page_entries_info @data %>
 
 <%= form_tag("/#{@database}/#{@table}", method: 'get') do %>
   <table class="table table-striped">

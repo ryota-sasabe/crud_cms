@@ -9,8 +9,9 @@
   <table class="table table-striped">
     <tr>
       <th>選択</th>
+      <%# フィールド見出し %>
       <% @fields.keys.each do |field| %>
-        <th><%= field %></th>
+        <th><%= sortable field %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
 

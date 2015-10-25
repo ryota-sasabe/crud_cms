@@ -1,5 +1,5 @@
 class CrudController < ApplicationController
-
+  helper_method :sort_column, :sort_direction
 
   before_action :initialize_table
 
@@ -30,7 +30,10 @@ class CrudController < ApplicationController
 
 #    logger.debug(conditions.to_s)
 
-    @data = @model.where(conditions).page(params[:page]).per(10)
+    @data = @model.where(conditions)
+                .order(sort_column + ' ' + sort_direction)
+                .page(params[:page])
+                .per(10)
     @column_properties = %w{name type sql_type null limit precision scale default}
 
   end
@@ -96,6 +99,14 @@ class CrudController < ApplicationController
       fields.delete_if {|field| field.in?(@non_editable_fields)}
 #      logger.debug(fields.inspect)
       params.require(@model_name).permit(fields)
+    end
+
+    def sort_column
+      @fields.keys.include?(params[:sort]) ? params[:sort] : "id"
+    end
+
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
     end
 
 end

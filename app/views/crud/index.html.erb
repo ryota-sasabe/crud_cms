@@ -2,7 +2,8 @@
 
 <p><%= link_to '新規登録', :controller => "crud", :action => "new" %></p>
 
-<%#= page_entries_info @data %>
+<%= paginate @data %>
+<p><%= page_entries_info @data %></p>
 
 <%= form_tag("/#{@database}/#{@table}", method: 'get') do %>
   <table class="table table-striped">

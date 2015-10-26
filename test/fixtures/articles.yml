@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  meta_keywords: MyString
+  meta_description: MyString
+  contents: MyText
+  writer_id: 1
+
+two:
+  title: MyString
+  meta_keywords: MyString
+  meta_description: MyString
+  contents: MyText
+  writer_id: 1

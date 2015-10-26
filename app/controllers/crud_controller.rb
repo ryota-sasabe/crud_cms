@@ -5,6 +5,21 @@ class CrudController < ApplicationController
 
   def index
 
+    # テーブル一覧作成
+    # モデルが存在するもののみに限定
+    # ただし、モデル名がテーブル名の単数系になっていないと取得できない
+    @database_tables = {}
+    ActiveRecord::Base.connection.tables.each do |table_name|
+      logger.debug(table_name.classify)
+      begin
+        table_name.classify.constantize
+        @database_tables[table_name][:name] = table_name
+      rescue => e
+        logger.debug(table_name + ' の Model が存在しません')
+      end
+
+    end
+
     # search
     if params[:search]
 #      @cond = .delete_if {|field, value| value.blank?}.symbolize_keys

@@ -5,10 +5,16 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.4'
 
 gem 'sass-rails', '~> 5.0'
+gem 'uglifier'
+gem 'coffee-rails'
+
 gem 'less-rails'
 gem 'therubyracer'
 gem 'execjs'
 gem 'twitter-bootstrap-rails'
+gem 'bootstrap-sass'
+gem 'sprockets'
+gem 'seed-fu'
 
 gem 'jquery-rails'
 gem 'sqlite3'
@@ -20,11 +26,10 @@ group :development, :test do
 end
 
 group :development do
-  # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
-
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'pry-rails'
+  gem 'pry-doc'
+  gem 'pry-byebug'
   gem 'spring'
   gem "meta_request"
 end
-

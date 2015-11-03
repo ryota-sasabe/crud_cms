@@ -5,21 +5,6 @@ class CrudController < ApplicationController
 
   def index
 
-    # テーブル一覧作成
-    # モデルが存在するもののみに限定
-    # ただし、モデル名がテーブル名の単数系になっていないと取得できない
-    @database_tables = {}
-    ActiveRecord::Base.connection.tables.each do |table_name|
-      logger.debug(table_name.classify)
-      begin
-        table_name.classify.constantize
-        @database_tables[table_name][:name] = table_name
-      rescue => e
-        logger.debug(table_name + ' の Model が存在しません')
-      end
-
-    end
-
     # search
     if params[:search]
 #      @cond = .delete_if {|field, value| value.blank?}.symbolize_keys
@@ -95,17 +80,61 @@ class CrudController < ApplicationController
       # とりあえず
       @non_editable_fields = ['id', 'created_at', 'updated_at']
 
+      # テーブルごと設定 後で切り出す
+      @config = {}
+      @config[:tables] = {}
+      @config[:tables][:articles] = {}
+      @config[:tables][:articles][:table_label] = '記事'
+      @config[:tables][:articles][:writer_id] = {
+        :options => {
+          :table => 'persons',
+          :label => 'name',
+          :value => 'id',
+        }
+      }
+
+      @config[:tables][:people] = {}
+      @config[:tables][:people][:table_label] = '人'
+
       @database = params[:database]
       @table = params[:table]
       @model_name = @table.classify
       @model = @model_name.constantize
       @columns = Module.const_get(@model_name).columns
       @fields = {}
+
+      # テーブルのフィールド回す
       @columns.each do |item|
         field_name = item.name
         @fields[field_name] = {}
         @fields[field_name][:type] = item.type
         @fields[field_name][:editable] = !field_name.in?(@non_editable_fields)
+
+        # options 項目取得
+        # @todo 書き方見直し
+        if config = @config[:tables][:articles][field_name.to_sym]
+
+          if options = config[:options]
+            model_name = options[:table].classify
+            model = model_name.constantize
+            @fields[field_name][:options] = model.pluck(options[:value], options[:label])
+          end
+        end
+      end
+
+      # テーブル一覧作成
+      # モデルが存在するもののみに限定
+      # ただし、モデル名がテーブル名の単数系になっていないと取得できない
+      @database_tables = {}
+      ActiveRecord::Base.connection.tables.each do |table_name|
+        logger.debug(table_name.classify)
+        begin
+          table_name.classify.constantize
+          @database_tables[table_name] = {}
+          @database_tables[table_name][:name] = @config[:tables][table_name.to_sym][:table_label]
+        rescue => e
+          logger.debug(table_name + ' の Model が存在しません')
+        end
       end
     end
 

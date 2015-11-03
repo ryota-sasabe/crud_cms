@@ -1,50 +1,49 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-user1:
+people1:
+  id: 1
   name: Ryota Sasabe
   email: saytrm@gmail.com
 
-user2:
+people2:
+  id: 2
   name: Taro Yamada
   email: taro@gmail.com
 
-user3:
+people3:
   name: Hanako Sato
   email: hanako@gmail.com
 
-user4:
+people4:
   name: Ichiro Tanaka
   email: ichiro@gmail.com
 
-user5:
+people5:
   name: Jiro Suzuki
   email: jiro@gmail.com
 
-user6:
+people6:
   name: Saburo Saito
   email: saburo@gmail.com
 
-user7:
+people7:
   name: Shichiro Takahashi
   email: shichiro@gmail.com
 
-user8:
+people8:
   name: Hachiro Kato
   email: hachiro@gmail.com
 
-user9:
+people9:
   name: Kuro Kimura
   email: kimura@gmail.com
 
-user10:
+people10:
   name: Takashi Yamaguchi
   email: yamaguchi@gmail.com
 
-user11:
+people11:
   name: Yuki Tsuchida
   email: tsuchida@gmail.com
 
-user12:
+people12:
   name: Kota Ozeki
   email: ozeki@gmail.com
-

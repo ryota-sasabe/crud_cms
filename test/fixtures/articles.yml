@@ -1,15 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: MyString
-  meta_keywords: MyString
-  meta_description: MyString
-  contents: MyText
+article1:
+  title: タイトル1
+  meta_keywords: メタキー1
+  meta_description: メタデスクリプション1
+  contents: 記事本文1記事本文記事本文記事本文記事本文
   writer_id: 1
 
-two:
-  title: MyString
-  meta_keywords: MyString
-  meta_description: MyString
-  contents: MyText
+article2:
+  title: タイトル2
+  meta_keywords: メタキー2
+  meta_description: メタデスクリプション2
+  contents: 記事本文1記事本文記事本文記事本文記事本文
   writer_id: 1

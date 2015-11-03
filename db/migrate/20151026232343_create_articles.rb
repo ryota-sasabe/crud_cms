@@ -8,6 +8,7 @@ class CreateArticles < ActiveRecord::Migration
       t.datetime :publish_date
       t.integer :writer_id
       t.timestamps null: false
+      add_foreign_key :articles, :persons, column: :writer_id
     end
   end
 end

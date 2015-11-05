@@ -27,7 +27,8 @@
     </div>
 
     <%# 入力項目 %>
-    <% @fields.each do |field, item| %>
+    <% @fields.each do |field, config| %>
+      <% name = "#{@model_name}[#{field}]" %>
 
       <% if action == :new %>
         <% next if field.in?(['id', 'created_at', 'updated_at']) %>
@@ -41,15 +42,19 @@
         <%= label field.to_sym, field.to_sym, :class => "col-sm-3 control-label" %>
 
         <div class="col-sm-7">
-          <% if item[:editable] %>
-            <%= text_field_tag("#{@model_name}[#{field}]", value, :class => "form-control") %>
+          <% if config[:editable] %>
+            <% if config[:options] %>
+              <%= select_tag name, options_for_select(config[:options].invert, :selected => value) %>
+            <% else %>
+              <%= text_field_tag(name, value, :class => "form-control") %>
+            <% end %>
           <% else %>
             <%= value %>
           <% end %>
         </div>
 
         <% if false %>
-          <% case item[:type] %>
+          <% case config[:type] %>
         <% when :string, :datetime %>
             <%= text_field_tag(field) %>
           <% when :integer %>
@@ -67,5 +72,3 @@
 
   <% end %>
 </div>
-
-

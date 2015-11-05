@@ -117,7 +117,8 @@ class CrudController < ApplicationController
           if options = config[:options]
             model_name = options[:table].classify
             model = model_name.constantize
-            @fields[field_name][:options] = model.pluck(options[:value], options[:label])
+            @fields[field_name][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
+
           end
         end
       end

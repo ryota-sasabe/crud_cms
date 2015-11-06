@@ -21,8 +21,9 @@
       <% @fields.each do |field, config| %>
         <td>
           <% name = 'search[' + field + ']' %>
+          <% value = @search[field] || nil %>
           <% if config[:options] %>
-            <%= select_tag name, options_for_select(config[:options].invert) %>
+            <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
           <% else %>
             <% case config[:type] %>
             <% when :string, :datetime %>

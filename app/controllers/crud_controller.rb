@@ -5,7 +5,8 @@ class CrudController < ApplicationController
 
   def index
 
-    # search
+    # 検索
+    @search = {}
     if params[:search]
 #      @cond = .delete_if {|field, value| value.blank?}.symbolize_keys
 
@@ -13,6 +14,7 @@ class CrudController < ApplicationController
       conditions = []
       params[:search].each do |field, value|
         next if value.blank?
+        @search[field] = value
         case @fields[field][:type]
           when :string
             where.push(field + ' like ?')

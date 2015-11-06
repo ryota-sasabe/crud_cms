@@ -44,7 +44,7 @@
         <div class="col-sm-7">
           <% if config[:editable] %>
             <% if config[:options] %>
-              <%= select_tag name, options_for_select(config[:options].invert, :selected => value) %>
+              <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
             <% else %>
               <%= text_field_tag(name, value, :class => "form-control") %>
             <% end %>

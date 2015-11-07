@@ -1,3 +1,0 @@
-    Prefix Verb URI Pattern                     Controller#Action
-crud_index GET  /crud/:table(.:format)          crud#index
- crud_edit GET  /crud/:table/:id/edit(.:format) crud#edit

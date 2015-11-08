@@ -10,8 +10,8 @@
     <tr>
       <th>選択</th>
       <%# フィールド見出し %>
-      <% @fields.keys.each do |field| %>
-        <th><%= sortable field %><i class="icon-arrow-up"></i></th>
+      <% @fields.each do |field, config| %>
+        <th><%= sortable field, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
 

@@ -82,12 +82,16 @@ class CrudController < ApplicationController
       # とりあえず
       @non_editable_fields = ['id', 'created_at', 'updated_at']
 
-      # テーブルごと設定 後で切り出す
-      @config = {}
-      @config[:tables] = {}
-      @config[:tables][:articles] = {}
-      @config[:tables][:articles][:table_label] = '記事'
-      @config[:tables][:articles][:writer_id] = {
+      # テーブルごとの設定項目 後で切り出す
+      table_config = {}
+      table_config[:tables] = {}
+      table_config[:tables][:articles] = {}
+      table_config[:tables][:articles][:table_label] = '記事'
+      table_config[:tables][:articles][:publish_date] = {
+        :label => '公開日'
+      }
+      table_config[:tables][:articles][:writer_id] = {
+        :label => '執筆者ID',
         :options => {
           :table => 'persons',
           :label => 'name',
@@ -95,8 +99,8 @@ class CrudController < ApplicationController
         }
       }
 
-      @config[:tables][:people] = {}
-      @config[:tables][:people][:table_label] = '人'
+      table_config[:tables][:people] = {}
+      table_config[:tables][:people][:table_label] = '人'
 
       @database = params[:database]
       @table = params[:table]
@@ -112,15 +116,19 @@ class CrudController < ApplicationController
         @fields[field_name][:type] = item.type
         @fields[field_name][:editable] = !field_name.in?(@non_editable_fields)
 
-        # options 項目取得
         # @todo 書き方見直し
-        if config = @config[:tables][:articles][field_name.to_sym]
+        if field_config = table_config[:tables][@table.to_sym][field_name.to_sym]
 
-          if options = config[:options]
+          # フィールドの表示名
+          @fields[field_name][:label] = field_config[:label] || field_name
+
+          # options 項目取得
+          if options = field_config[:options]
             model_name = options[:table].classify
             model = model_name.constantize
-            @fields[field_name][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
 
+            # select の options 選択項目
+            @fields[field_name][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
           end
         end
       end
@@ -134,7 +142,7 @@ class CrudController < ApplicationController
         begin
           table_name.classify.constantize
           @database_tables[table_name] = {}
-          @database_tables[table_name][:name] = @config[:tables][table_name.to_sym][:table_label]
+          @database_tables[table_name][:name] = table_config[:tables][table_name.to_sym][:table_label]
         rescue => e
           logger.debug(table_name + ' の Model が存在しません')
         end

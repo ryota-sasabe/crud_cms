@@ -37,9 +37,8 @@
         <% value = eval('@data.' + field) %>
       <% end %>
 
-
       <div class="form-group">
-        <%= label field.to_sym, field.to_sym, :class => "col-sm-3 control-label" %>
+        <%= label field.to_sym, field.to_sym, config[:label], :class => "col-sm-3 control-label" %>
 
         <div class="col-sm-7">
           <% if config[:editable] %>

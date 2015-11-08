@@ -12,17 +12,18 @@ class CrudController < ApplicationController
 
       where = []
       conditions = []
-      params[:search].each do |field, value|
+      params[:search].each do |field_name, value|
         next if value.blank?
+        field = field_name.to_sym
         @search[field] = value
         case @fields[field][:type]
           when :string
-            where.push(field + ' like ?')
+            where.push(field_name + ' like ?')
             value = '%' + value + '%'
           when :integer
-            where.push(field + ' = ?')
+            where.push(field_name + ' = ?')
           else
-            where.push(field + ' = ?')
+            where.push(field_name + ' = ?')
         end
         conditions.push(value)
       end
@@ -88,14 +89,14 @@ class CrudController < ApplicationController
       table_config[:tables][:articles] = {}
       table_config[:tables][:articles][:table_label] = '記事'
       table_config[:tables][:articles][:publish_date] = {
-        :label => '公開日'
+        label: '公開日'
       }
       table_config[:tables][:articles][:writer_id] = {
-        :label => '執筆者ID',
-        :options => {
-          :table => 'persons',
-          :label => 'name',
-          :value => 'id',
+        label: '執筆者ID',
+        options: {
+          table: 'persons',
+          label: 'name',
+          value: 'id',
         }
       }
 
@@ -112,15 +113,17 @@ class CrudController < ApplicationController
       # テーブルのフィールド回す
       @columns.each do |item|
         field_name = item.name
-        @fields[field_name] = {}
-        @fields[field_name][:type] = item.type
-        @fields[field_name][:editable] = !field_name.in?(@non_editable_fields)
+        field = field_name.to_sym
+        @fields[field] = {}
+        @fields[field][:name] = item.name
+        @fields[field][:type] = item.type
+        @fields[field][:editable] = !field_name.in?(@non_editable_fields)
 
         # @todo 書き方見直し
-        if field_config = table_config[:tables][@table.to_sym][field_name.to_sym]
+        if field_config = table_config[:tables][@table.to_sym][field]
 
           # フィールドの表示名
-          @fields[field_name][:label] = field_config[:label] || field_name
+          @fields[field][:label] = field_config[:label] || field_name
 
           # options 項目取得
           if options = field_config[:options]
@@ -128,7 +131,7 @@ class CrudController < ApplicationController
             model = model_name.constantize
 
             # select の options 選択項目
-            @fields[field_name][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
+            @fields[field][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
           end
         end
       end

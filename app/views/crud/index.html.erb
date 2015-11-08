@@ -11,7 +11,7 @@
       <th>選択</th>
       <%# フィールド見出し %>
       <% @fields.each do |field, config| %>
-        <th><%= sortable field, config[:label] %><i class="icon-arrow-up"></i></th>
+        <th><%= sortable field.to_s, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
 
@@ -20,7 +20,7 @@
       <td><%= submit_tag("Search") %></td>
       <% @fields.each do |field, config| %>
         <td>
-          <% name = 'search[' + field + ']' %>
+          <% name = 'search[' + field.to_s + ']' %>
           <% value = @search[field] || nil %>
           <% if config[:options] %>
             <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
@@ -44,12 +44,12 @@
         <td>[ ]</td>
         <% @fields.each do |field, config| %>
             <td>
-              <% value = eval('datum.' + field) %>
+              <% value = eval('datum.' + field.to_s) %>
               <% if config[:options] %>
                 <% value = config[:options][value] %>
               <% end %>
-              <% if field == 'id' %>
-                <%= link_to value, :controller => "crud", :action => "edit", :id => value %>
+              <% if field == :id %>
+                <%= link_to value, controller: 'crud', action: 'edit', id: value %>
               <% else %>
                   <%= value %>
               <% end %>

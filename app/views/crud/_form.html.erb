@@ -28,17 +28,18 @@
 
     <%# 入力項目 %>
     <% @fields.each do |field, config| %>
-      <% name = "#{@model_name}[#{field}]" %>
+      <% field_name = field.to_s %>
+      <% name = "#{@model_name}[#{field_name}]" %>
 
       <% if action == :new %>
-        <% next if field.in?(['id', 'created_at', 'updated_at']) %>
+        <% next if field_name.in?(['id', 'created_at', 'updated_at']) %>
         <% value = '' %>
       <% elsif action == :edit %>
-        <% value = eval('@data.' + field) %>
+        <% value = eval('@data.' + field_name) %>
       <% end %>
 
       <div class="form-group">
-        <%= label field.to_sym, field.to_sym, config[:label], :class => "col-sm-3 control-label" %>
+        <%= label field, field, config[:label], :class => "col-sm-3 control-label" %>
 
         <div class="col-sm-7">
           <% if config[:editable] %>

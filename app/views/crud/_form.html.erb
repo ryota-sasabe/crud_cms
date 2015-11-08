@@ -39,27 +39,27 @@
       <% end %>
 
       <div class="form-group">
-        <%= label field, field, config[:label], :class => "col-sm-3 control-label" %>
+        <%= label field, field, config[:label], class: 'col-sm-3 control-label' %>
 
         <div class="col-sm-7">
           <% if config[:editable] %>
             <% if config[:options] %>
-              <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
+              <%= select_tag name, options_for_select(config[:options].invert, selected: value), include_blank: true %>
             <% else %>
               <% case config[:type] %>
               <% when :string %>
-                <%= text_field_tag(name, value, :class => "form-control") %>
+                <%= text_field_tag(name, value, class: 'form-control') %>
               <% when :datetime %>
-                <div class='input-group date datepicker'>
-                  <%= text_field(name, value, :class => "form-control") %>
+                <div class='input-group'>
+                  <%= text_field(name, value,  data: {date_format: 'YYYY-MM-DD hh:mm:ss'}, class: 'form-control datetimepicker') %>
                   <span class="input-group-addon">
                 </div>
               <% when :text %>
-                <%= text_area_tag(name, value, :class => "form-control") %>
+                <%= text_area_tag(name, value, class: 'form-control') %>
               <% when :integer %>
-                <%= number_field_tag(name, value, :class => "form-control") %>
+                <%= number_field_tag(name, value, class: 'form-control') %>
               <% else %>
-                <%= text_field_tag(name, value, :class => "form-control") %>
+                <%= text_field_tag(name, value, class: 'form-control') %>
               <% end %>
 
 

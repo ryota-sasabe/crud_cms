@@ -52,7 +52,7 @@ class CrudController < ApplicationController
   def create
     @data = @model.new(editable_params)
     if @data.save
-      redirect_to({:action => "edit_complete", :id => @data.id}, notice: 'データの新規登録が完了しました。')
+      redirect_to({:action => "edit_complete", id: @data.id}, notice: 'データの新規登録が完了しました。')
     else
       render action: 'new'
     end
@@ -68,7 +68,7 @@ class CrudController < ApplicationController
     @data = @model.find(@id)
 
     if @data.update(editable_params)
-      redirect_to({:action => "edit_complete", :id => @id}, notice: 'データの更新が完了しました。')
+      redirect_to({:action => "edit_complete", id: @id}, notice: 'データの更新が完了しました。')
     else
       render action: 'edit'
     end
@@ -81,7 +81,7 @@ class CrudController < ApplicationController
   private
     def initialize_table ()
       # とりあえず
-      @non_editable_fields = ['id', 'created_at', 'updated_at']
+      @non_editable_fields = [:id, :created_at, :updated_at]
 
       # テーブルごとの設定項目 後で切り出す
       table_config = {}
@@ -117,7 +117,7 @@ class CrudController < ApplicationController
         @fields[field] = {}
         @fields[field][:name] = item.name
         @fields[field][:type] = item.type
-        @fields[field][:editable] = !field_name.in?(@non_editable_fields)
+        @fields[field][:editable] = !field.in?(@non_editable_fields)
 
         # @todo 書き方見直し
         if field_config = table_config[:tables][@table.to_sym][field]
@@ -160,11 +160,12 @@ class CrudController < ApplicationController
     end
 
     def sort_column
-      @fields.keys.include?(params[:sort]) ? params[:sort] : "id"
+      return 'id' if params[:sort].nil?
+      @fields.keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
     end
 
     def sort_direction
-      %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
+      %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
     end
 
 end

@@ -21,6 +21,11 @@ gem 'sqlite3'
 gem 'kaminari'
 gem 'kaminari-bootstrap', '~> 3.0.1'
 
+gem 'momentjs-rails'
+gem 'bootstrap3-datetimepicker-rails'
+
+gem "font-awesome-rails"
+
 group :development, :test do
   gem 'byebug'
 end

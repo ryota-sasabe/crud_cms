@@ -32,7 +32,7 @@
       <% name = "#{@model_name}[#{field_name}]" %>
 
       <% if action == :new %>
-        <% next if field_name.in?(['id', 'created_at', 'updated_at']) %>
+        <% next if field.in?([:id, :created_at, :updated_at]) %>
         <% value = '' %>
       <% elsif action == :edit %>
         <% value = eval('@data.' + field_name) %>
@@ -46,7 +46,23 @@
             <% if config[:options] %>
               <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
             <% else %>
-              <%= text_field_tag(name, value, :class => "form-control") %>
+              <% case config[:type] %>
+              <% when :string %>
+                <%= text_field_tag(name, value, :class => "form-control") %>
+              <% when :datetime %>
+                <div class='input-group date datepicker'>
+                  <%= text_field(name, value, :class => "form-control") %>
+                  <span class="input-group-addon">
+                </div>
+              <% when :text %>
+                <%= text_area_tag(name, value, :class => "form-control") %>
+              <% when :integer %>
+                <%= number_field_tag(name, value, :class => "form-control") %>
+              <% else %>
+                <%= text_field_tag(name, value, :class => "form-control") %>
+              <% end %>
+
+
             <% end %>
           <% else %>
             <%= value %>
@@ -54,14 +70,6 @@
         </div>
 
         <% if false %>
-          <% case config[:type] %>
-        <% when :string, :datetime %>
-            <%= text_field_tag(field) %>
-          <% when :integer %>
-            <%= number_field_tag(name) %>
-          <% else %>
-            <%= text_field_tag(name) %>
-          <% end %>
         <% end %>
 
       </div>

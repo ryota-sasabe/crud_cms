@@ -75,7 +75,7 @@ class CrudController < ApplicationController
   end
 
   def edit_complete
-
+    @id = params[:id]
   end
 
   private

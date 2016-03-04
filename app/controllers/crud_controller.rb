@@ -5,6 +5,16 @@ class CrudController < ApplicationController
 
   def index
 
+    # 表示列
+    @list_fields = @fields.keys
+    if params[:list_fields]
+      @fields.keys.each do |field_name|
+        unless params[:list_fields].key?(field_name.to_s)
+          @list_fields.delete(field_name)
+        end
+      end
+    end
+
     # 検索
     @search = {}
     if params[:search]
@@ -157,6 +167,7 @@ class CrudController < ApplicationController
       fields.delete_if {|field| field.in?(@non_editable_fields)}
 #      logger.debug(fields.inspect)
       params.require(@model_name).permit(fields)
+
     end
 
     def sort_column

@@ -10,7 +10,8 @@
     <tr>
       <th>選択</th>
       <%# フィールド見出し %>
-      <% @fields.each do |field, config| %>
+      <% @list_fields.each do |field| %>
+      <% config = @fields[field] %>
         <th><%= sortable field.to_s, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
@@ -18,7 +19,8 @@
     <%# 検索フィールド %>
     <tr>
       <td><%= submit_tag("Search") %></td>
-      <% @fields.each do |field, config| %>
+      <% @list_fields.each do |field| %>
+        <% config = @fields[field] %>
         <td>
           <% name = 'search[' + field.to_s + ']' %>
           <% value = @search[field] || nil %>
@@ -42,7 +44,8 @@
     <% @data.each do |datum| %>
       <tr>
         <td>[ ]</td>
-        <% @fields.each do |field, config| %>
+        <% @list_fields.each do |field| %>
+            <% config = @fields[field] %>
             <td>
               <% value = eval('datum.' + field.to_s) %>
               <% if config[:options] %>
@@ -60,8 +63,14 @@
 
   </table>
 
-<% end #/form_tag %>
 
+<h2>表示列選択</h2>
+  <% @fields.each do |field, config| %>
+    <% name = 'list_fields[' + field.to_s + ']' %>
+    <%= check_box_tag name, 1 %><%= label_tag name, field.to_s %>
+  <% end %>
+  <%= submit_tag("適用") %>
+<% end #/form_tag %>
 
 <h2>テーブル定義情報</h2>
 

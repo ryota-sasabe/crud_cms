@@ -67,7 +67,7 @@
 <h2>表示列選択</h2>
   <% @fields.each do |field, config| %>
     <% name = 'list_fields[' + field.to_s + ']' %>
-    <%= check_box_tag name, 1 %><%= label_tag name, field.to_s %>
+    <%= check_box_tag name, 1, @list_fields.include?(field) %><%= label_tag name, field.to_s %>
   <% end %>
   <%= submit_tag("適用") %>
 <% end #/form_tag %>

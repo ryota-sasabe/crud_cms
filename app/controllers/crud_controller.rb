@@ -6,13 +6,10 @@ class CrudController < ApplicationController
   def index
 
     # 表示列
-    @list_fields = @fields.keys
     if params[:list_fields]
-      @fields.keys.each do |field_name|
-        unless params[:list_fields].key?(field_name.to_s)
-          @list_fields.delete(field_name)
-        end
-      end
+      @list_fields = params[:list_fields].symbolize_keys.keys
+    else
+      @list_fields = @fields.keys
     end
 
     # 検索

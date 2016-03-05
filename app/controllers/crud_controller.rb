@@ -20,8 +20,9 @@ class CrudController < ApplicationController
       where = []
       conditions = []
       params[:search].each do |field_name, value|
-        next if value.blank?
         field = field_name.to_sym
+        next unless @fields.key?(field)
+        next if value.blank?
         @search[field] = value
         case @fields[field][:type]
           when :string

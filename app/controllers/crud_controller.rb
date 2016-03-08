@@ -14,6 +14,7 @@ class CrudController < ApplicationController
 
     # 検索
     @search = {}
+    includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
     if params[:search]
 #      @cond = .delete_if {|field, value| value.blank?}.symbolize_keys
 
@@ -41,7 +42,8 @@ class CrudController < ApplicationController
 
 #    logger.debug(conditions.to_s)
 
-    @data = @model.where(conditions)
+    @data = @model.includes(includes)
+                .where(conditions)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)

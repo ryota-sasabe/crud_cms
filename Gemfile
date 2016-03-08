@@ -24,7 +24,8 @@ gem 'kaminari-bootstrap', '~> 3.0.1'
 gem 'momentjs-rails'
 gem 'bootstrap3-datetimepicker-rails'
 
-gem "font-awesome-rails"
+gem 'font-awesome-rails'
+gem 'ransack'
 
 group :development, :test do
   gem 'byebug'

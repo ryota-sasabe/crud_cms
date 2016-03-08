@@ -13,37 +13,11 @@ class CrudController < ApplicationController
     end
 
     # 検索
-    @search = {}
+    @search = params[:search] || {}
+
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
-    if params[:search]
-#      @cond = .delete_if {|field, value| value.blank?}.symbolize_keys
 
-      where = []
-      conditions = []
-      params[:search].each do |field_name, value|
-        field = field_name.to_sym
-        next unless @fields.key?(field)
-        next if value.blank?
-        @search[field] = value
-        case @fields[field][:type]
-          when :string
-            where.push(field_name + ' like ?')
-            value = '%' + value + '%'
-          when :integer
-            where.push(field_name + ' = ?')
-          else
-            where.push(field_name + ' = ?')
-        end
-        conditions.push(value)
-      end
-#      logger.debug(where.join(' and '))
-      conditions.unshift(where.join(' and '))
-    end
-
-#    logger.debug(conditions.to_s)
-
-    @data = @model.includes(includes)
-                .where(conditions)
+    @data = @model.search(params[:search]).result.includes(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)

@@ -22,7 +22,7 @@
       <% @list_fields.each do |field| %>
         <% config = @fields[field] %>
         <td>
-          <% name = "search[#{field.to_s}_cont]" %>
+          <% name = "search[#{field.to_s}]" %>
           <% value = @search[field] || nil %>
           <% if config[:options] %>
             <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>

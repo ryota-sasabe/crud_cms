@@ -16,7 +16,7 @@ class CrudController < ApplicationController
     @search = params[:search] || {}
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
-    @data = @model.search(params[:search]).result.includes(includes)
+    @data = @model.search(ransack_search_params).result.includes(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
@@ -100,6 +100,7 @@ class CrudController < ApplicationController
         @fields[field][:name] = item.name
         @fields[field][:type] = item.type
         @fields[field][:editable] = !field.in?(@non_editable_fields)
+        @fields[field][:ransack_search_name] = field_name + '_cont'
 
         # @todo 書き方見直し
         if field_config = crud_config[:model][@current_model_name.to_sym][field]
@@ -148,6 +149,14 @@ class CrudController < ApplicationController
 
     def sort_direction
       %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    end
+
+    def ransack_search_params
+      hash = {}
+      params[:search].map do |key, value|
+        hash[key + '_cont'] = value
+      end
+      return hash
     end
 
 end

@@ -1,11 +1,11 @@
-<h2><%= @table %> データ一覧</h2>
+<h2><%= @current_model_name %> データ一覧</h2>
 
 <p><%= link_to '新規登録', :controller => "crud", :action => "new" %></p>
 
 <%= paginate @data %>
 <p><%= page_entries_info @data %></p>
 
-<%= form_tag("/#{@database}/#{@table}", method: 'get') do %>
+<%= form_tag("/#{@database}/#{@current_model_name}", method: 'get') do %>
   <table class="table table-striped">
     <tr>
       <th>選択</th>
@@ -22,7 +22,7 @@
       <% @list_fields.each do |field| %>
         <% config = @fields[field] %>
         <td>
-          <% name = 'search[' + field.to_s + '_cont]' %>
+          <% name = "search[#{field.to_s}_cont]" %>
           <% value = @search[field] || nil %>
           <% if config[:options] %>
             <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>

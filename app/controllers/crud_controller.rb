@@ -16,7 +16,6 @@ class CrudController < ApplicationController
     @search = params[:search] || {}
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
-
     @data = @model.search(params[:search]).result.includes(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
@@ -68,30 +67,29 @@ class CrudController < ApplicationController
       @non_editable_fields = [:id, :created_at, :updated_at]
 
       # テーブルごとの設定項目 後で切り出す
-      table_config = {}
-      table_config[:tables] = {}
-      table_config[:tables][:articles] = {}
-      table_config[:tables][:articles][:table_label] = '記事'
-      table_config[:tables][:articles][:publish_date] = {
+      crud_config = {}
+      crud_config[:model] = {}
+      crud_config[:model][:Article] = {}
+      crud_config[:model][:Article][:table_label] = '記事'
+      crud_config[:model][:Article][:publish_date] = {
         label: '公開日'
       }
-      table_config[:tables][:articles][:writer_id] = {
+      crud_config[:model][:Article][:writer_id] = {
         label: '執筆者ID',
         options: {
-          table: 'persons',
+          model: 'Person',
           label: 'name',
           value: 'id',
         }
       }
 
-      table_config[:tables][:people] = {}
-      table_config[:tables][:people][:table_label] = '人'
+      crud_config[:model][:Person] = {}
+      crud_config[:model][:Person][:table_label] = '人'
 
       @database = params[:database]
-      @table = params[:table]
-      @model_name = @table.classify
-      @model = @model_name.constantize
-      @columns = Module.const_get(@model_name).columns
+      @current_model_name = params[:model]
+      @model = @current_model_name.constantize
+      @columns = Module.const_get(@current_model_name).columns
       @fields = {}
 
       # テーブルのフィールド回す
@@ -104,15 +102,14 @@ class CrudController < ApplicationController
         @fields[field][:editable] = !field.in?(@non_editable_fields)
 
         # @todo 書き方見直し
-        if field_config = table_config[:tables][@table.to_sym][field]
+        if field_config = crud_config[:model][@current_model_name.to_sym][field]
 
           # フィールドの表示名
           @fields[field][:label] = field_config[:label] || field_name
 
           # options 項目取得
           if options = field_config[:options]
-            model_name = options[:table].classify
-            model = model_name.constantize
+            model = options[:model].constantize
 
             # select の options 選択項目
             @fields[field][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
@@ -129,7 +126,7 @@ class CrudController < ApplicationController
         begin
           table_name.classify.constantize
           @database_tables[table_name] = {}
-          @database_tables[table_name][:name] = table_config[:tables][table_name.to_sym][:table_label]
+          @database_tables[table_name][:name] = crud_config[:model][table_name.to_sym][:table_label]
         rescue => e
           logger.debug(table_name + ' の Model が存在しません')
         end
@@ -140,7 +137,7 @@ class CrudController < ApplicationController
       fields = @fields.keys
       fields.delete_if {|field| field.in?(@non_editable_fields)}
 #      logger.debug(fields.inspect)
-      params.require(@model_name).permit(fields)
+      params.require(@current_model_name).permit(fields)
 
     end
 

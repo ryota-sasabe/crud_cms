@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
-  get ':database/:table' => 'crud#index', as: :crud_index
-  get ':database/:table/new' => 'crud#new', as: :crud_new
-  post ':database/:table/create' => 'crud#create', as: :crud_create
-  get ':database/:table/:id/edit' => 'crud#edit', as: :crud_edit
-  get ':database/:table/:id/edit_complete' => 'crud#edit_complete', as: :crud_edit_complete
-  patch ':database/:table/:id/update' => 'crud#update', as: :crud_update
+  get ':database/:model' => 'crud#index', as: :crud_index
+  get ':database/:model/new' => 'crud#new', as: :crud_new
+  post ':database/:model/create' => 'crud#create', as: :crud_create
+  get ':database/:model/:id/edit' => 'crud#edit', as: :crud_edit
+  get ':database/:model/:id/edit_complete' => 'crud#edit_complete', as: :crud_edit_complete
+  patch ':database/:model/:id/update' => 'crud#update', as: :crud_update
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

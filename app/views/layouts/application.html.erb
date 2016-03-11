@@ -18,8 +18,8 @@
         テーブル一覧<b class="caret"></b>
       </a>
       <ul class="dropdown-menu">
-        <% @database_tables.each do |table_name, item| %>
-          <li><%= link_to "#{item[:name]} (#{table_name})", :controller => "crud", :action => "index", :table => table_name %></li>
+        <% @all_models.each do |model_name, item| %>
+          <li><%= link_to "#{item[:name]} (#{model_name})", :controller => "crud", :action => "index", :model => model_name %></li>
         <% end %>
       </ul>
     </li>

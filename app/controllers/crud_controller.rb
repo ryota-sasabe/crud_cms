@@ -13,7 +13,7 @@ class CrudController < ApplicationController
     end
 
     # 検索
-    @search = params[:search] || {}
+    @search = search_params
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
     @data = @model.search(ransack_search_params).result.includes(includes)
@@ -121,15 +121,16 @@ class CrudController < ApplicationController
       # テーブル一覧作成
       # モデルが存在するもののみに限定
       # ただし、モデル名がテーブル名の単数系になっていないと取得できない
-      @database_tables = {}
-      ActiveRecord::Base.connection.tables.each do |table_name|
-        logger.debug(table_name.classify)
+      @all_models = {}
+      ActiveRecord::Base.subclasses.each do |model_class|
+        model_name = model_class.table_name.classify
+        logger.debug(model_name)
         begin
-          table_name.classify.constantize
-          @database_tables[table_name] = {}
-          @database_tables[table_name][:name] = crud_config[:model][table_name.to_sym][:table_label]
+          model_name.constantize
+          @all_models[model_name.to_sym] = {}
+          @all_models[model_name.to_sym][:name] = crud_config[:model][model_name.to_sym][:table_label]
         rescue => e
-          logger.debug(table_name + ' の Model が存在しません')
+          logger.debug(model_name + ' の Model が存在しません')
         end
       end
     end
@@ -151,12 +152,21 @@ class CrudController < ApplicationController
       %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
     end
 
-    def ransack_search_params
+    def search_params
       hash = {}
-      params[:search].map do |key, value|
-        hash[key + '_cont'] = value
+      return hash if !params[:search] || !params[:search].respond_to?(:require)
+      params.require(:search).permit(@fields.keys).each do |key, value|
+        hash[key.to_sym] = value
       end
       return hash
     end
 
+    def ransack_search_params
+      hash = {}
+      search_params.each do |key, value|
+        name = (key.to_s + '_cont').to_sym
+        hash[name] = value
+      end
+      return hash
+    end
 end

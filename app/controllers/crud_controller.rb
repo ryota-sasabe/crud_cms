@@ -164,8 +164,16 @@ class CrudController < ApplicationController
     def ransack_search_params
       hash = {}
       search_params.each do |key, value|
-        name = (key.to_s + '_cont').to_sym
-        hash[name] = value
+        field = key.to_s
+        case @fields[key][:type]
+        when :string, :text
+          name = field + '_cont'
+        when :integer, :datetime, :boolean
+          name = field + '_in'
+        else
+          Rails.logger.debug('kokokita')
+        end
+        hash[name.to_sym] = value
       end
       return hash
     end

@@ -1,4 +1,4 @@
 class Article < ActiveRecord::Base
-  belongs_to :person, foreign_key: :writer_id
+  belongs_to :Person, foreign_key: :writer_id
 
 end

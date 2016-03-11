@@ -15,7 +15,7 @@ class CrudController < ApplicationController
     # 検索
     @search = search_params
 
-    includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.name}
+    includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
     @data = @model.search(ransack_search_params).result.includes(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
@@ -87,10 +87,35 @@ class CrudController < ApplicationController
       crud_config[:model][:Person][:table_label] = '人'
 
       @database = params[:database]
-      @current_model_name = params[:model]
-      @model = @current_model_name.constantize
-      @columns = Module.const_get(@current_model_name).columns
+      @current_model_name = params[:model].to_sym
+
+
+      @model = @current_model_name.to_s.constantize
+
+      @associate_model_names = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
+
+      # 現在のモデル + 関連モデル情報取得
+      ([@current_model_name] + @associate_model_names).each do |model_name|
+        model_name.to_s.constantize
+      end
+
+      @columns = Module.const_get(@current_model_name.to_s).columns
       @fields = {}
+
+
+      # 全モデル情報取得
+      @all_models = {}
+      ActiveRecord::Base.subclasses.each do |model_class|
+        model_name = model_class.table_name.classify.to_sym
+        logger.debug(model_name)
+        begin
+#          model_name.constantize
+          @all_models[model_name] = {}
+          @all_models[model_name][:name] = crud_config[:model][model_name][:table_label]
+        rescue => e
+          logger.debug(model_name.to_s + ' の Model が存在しません')
+        end
+      end
 
       # テーブルのフィールド回す
       @columns.each do |item|
@@ -100,10 +125,9 @@ class CrudController < ApplicationController
         @fields[field][:name] = item.name
         @fields[field][:type] = item.type
         @fields[field][:editable] = !field.in?(@non_editable_fields)
-        @fields[field][:ransack_search_name] = field_name + '_cont'
 
         # @todo 書き方見直し
-        if field_config = crud_config[:model][@current_model_name.to_sym][field]
+        if field_config = crud_config[:model][@current_model_name][field]
 
           # フィールドの表示名
           @fields[field][:label] = field_config[:label] || field_name
@@ -118,21 +142,6 @@ class CrudController < ApplicationController
         end
       end
 
-      # テーブル一覧作成
-      # モデルが存在するもののみに限定
-      # ただし、モデル名がテーブル名の単数系になっていないと取得できない
-      @all_models = {}
-      ActiveRecord::Base.subclasses.each do |model_class|
-        model_name = model_class.table_name.classify
-        logger.debug(model_name)
-        begin
-          model_name.constantize
-          @all_models[model_name.to_sym] = {}
-          @all_models[model_name.to_sym][:name] = crud_config[:model][model_name.to_sym][:table_label]
-        rescue => e
-          logger.debug(model_name + ' の Model が存在しません')
-        end
-      end
     end
 
     def editable_params

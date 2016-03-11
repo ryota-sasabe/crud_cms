@@ -5,7 +5,7 @@
 <%= paginate @data %>
 <p><%= page_entries_info @data %></p>
 
-<%= form_tag("/#{@database}/#{@current_model_name}", method: 'get') do %>
+<%= form_tag("/#{@database}/#{@current_model_name.to_s}", method: 'get') do %>
   <table class="table table-striped">
     <tr>
       <th>選択</th>

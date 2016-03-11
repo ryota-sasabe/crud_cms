@@ -1,3 +1,3 @@
 class Person < ActiveRecord::Base
-  has_many :articles, foreign_key: :writer_id
+  has_many :Article, foreign_key: :writer_id
 end

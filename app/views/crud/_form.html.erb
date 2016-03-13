@@ -27,7 +27,7 @@
     </div>
 
     <%# 入力項目 %>
-    <% @fields.each do |field, config| %>
+    <% @fields[@current_model_name].each do |field, config| %>
       <% field_name = field.to_s %>
       <% name = "#{@current_model_name.to_s}[#{field_name}]" %>
 

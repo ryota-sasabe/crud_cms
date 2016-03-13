@@ -11,7 +11,7 @@
       <th>選択</th>
       <%# フィールド見出し %>
       <% @list_fields.each do |field| %>
-      <% config = @fields[field] %>
+      <% config = @fields[@current_model_name][field] %>
         <th><%= sortable field.to_s, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
@@ -20,7 +20,7 @@
     <tr>
       <td><%= submit_tag("Search") %></td>
       <% @list_fields.each do |field| %>
-        <% config = @fields[field] %>
+        <% config = @fields[@current_model_name][field] %>
         <td>
           <% name = "search[#{field.to_s}]" %>
           <% value = @search[field] || nil %>
@@ -45,7 +45,7 @@
       <tr>
         <td>[ ]</td>
         <% @list_fields.each do |field| %>
-            <% config = @fields[field] %>
+            <% config = @fields[@current_model_name][field] %>
             <td>
               <% value = eval('datum.' + field.to_s) %>
               <% if config[:options] %>
@@ -65,7 +65,7 @@
 
 
 <h2>表示列選択</h2>
-  <% @fields.each do |field, config| %>
+  <% @fields[@current_model_name].each do |field, config| %>
     <% name = 'list_fields[' + field.to_s + ']' %>
     <%= check_box_tag name, 1, @list_fields.include?(field) %><%= label_tag name, field.to_s %>
   <% end %>
@@ -81,7 +81,7 @@
     <% end %>
   </tr>
 
-  <% @columns.each do |item| %>
+  <% @table_columns[@current_model_name].each do |item| %>
       <tr>
         <% @column_properties.each do |property| %>
             <td><%= eval('item.' + property) %></td>

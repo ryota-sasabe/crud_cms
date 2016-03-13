@@ -9,7 +9,7 @@ class CrudController < ApplicationController
     if params[:list_fields]
       @list_fields = params[:list_fields].symbolize_keys.keys
     else
-      @list_fields = @fields.keys
+      @list_fields = @fields[@current_model_name].keys
     end
 
     # 検索
@@ -95,12 +95,39 @@ class CrudController < ApplicationController
       @associate_model_names = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
 
       # 現在のモデル + 関連モデル情報取得
+      @table_columns = {}
+      @fields = {}
       ([@current_model_name] + @associate_model_names).each do |model_name|
         model_name.to_s.constantize
+        @table_columns[model_name] = Module.const_get(model_name.to_s).columns
+
+        # テーブルのフィールド回す
+        @fields[model_name] = {}
+        @table_columns[model_name].each do |item|
+          field_name = item.name
+          field = field_name.to_sym
+          @fields[model_name][field] = {}
+          @fields[model_name][field][:name] = item.name
+          @fields[model_name][field][:type] = item.type
+          @fields[model_name][field][:editable] = !field.in?(@non_editable_fields)
+
+          if field_config = crud_config[:model][@current_model_name][field]
+
+            # フィールドの表示名
+            @fields[model_name][field][:label] = field_config[:label] || field_name
+
+            # options 項目取得
+            if options = field_config[:options]
+              model = options[:model].constantize
+
+              # select の options 選択項目
+              @fields[model_name][field][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
+            end
+          end
+        end
+
       end
 
-      @columns = Module.const_get(@current_model_name.to_s).columns
-      @fields = {}
 
 
       # 全モデル情報取得
@@ -117,35 +144,11 @@ class CrudController < ApplicationController
         end
       end
 
-      # テーブルのフィールド回す
-      @columns.each do |item|
-        field_name = item.name
-        field = field_name.to_sym
-        @fields[field] = {}
-        @fields[field][:name] = item.name
-        @fields[field][:type] = item.type
-        @fields[field][:editable] = !field.in?(@non_editable_fields)
-
-        # @todo 書き方見直し
-        if field_config = crud_config[:model][@current_model_name][field]
-
-          # フィールドの表示名
-          @fields[field][:label] = field_config[:label] || field_name
-
-          # options 項目取得
-          if options = field_config[:options]
-            model = options[:model].constantize
-
-            # select の options 選択項目
-            @fields[field][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
-          end
-        end
-      end
 
     end
 
     def editable_params
-      fields = @fields.keys
+      fields = @fields[@current_model_name].keys
       fields.delete_if {|field| field.in?(@non_editable_fields)}
 #      logger.debug(fields.inspect)
       params.require(@current_model_name).permit(fields)
@@ -154,7 +157,7 @@ class CrudController < ApplicationController
 
     def sort_column
       return 'id' if params[:sort].nil?
-      @fields.keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
+      @fields[@current_model_name].keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
     end
 
     def sort_direction
@@ -164,7 +167,7 @@ class CrudController < ApplicationController
     def search_params
       hash = {}
       return hash if !params[:search] || !params[:search].respond_to?(:require)
-      params.require(:search).permit(@fields.keys).each do |key, value|
+      params.require(:search).permit(@fields[@current_model_name].keys).each do |key, value|
         hash[key.to_sym] = value
       end
       return hash
@@ -174,7 +177,7 @@ class CrudController < ApplicationController
       hash = {}
       search_params.each do |key, value|
         field = key.to_s
-        case @fields[key][:type]
+        case @fields[@current_model_name][key][:type]
         when :string, :text
           name = field + '_cont'
         when :integer, :datetime, :boolean

@@ -6,10 +6,20 @@ class CrudController < ApplicationController
   def index
 
     # 表示列
+    @list_fields = []
     if params[:list_fields]
-      @list_fields = params[:list_fields].symbolize_keys.keys
+      params[:list_fields].each do |model_name, item|
+        item.symbolize_keys.keys.each do |field|
+          @list_fields.push({:model => model_name.to_sym, :field => field})
+        end
+      end
     else
-      @list_fields = @fields[@current_model_name].keys
+#      @list_fields = @fields[@current_model_name].keys
+      @fields.each do |model_name, item|
+        item.each do |field, config|
+          @list_fields.push({:model => model_name, :field => field})
+        end
+      end
     end
 
     # 検索
@@ -20,8 +30,9 @@ class CrudController < ApplicationController
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
-    @column_properties = %w{name type sql_type null limit precision scale default}
 
+
+    @column_properties = %w{name type sql_type null limit precision scale default}
   end
 
   def show
@@ -92,7 +103,7 @@ class CrudController < ApplicationController
 
       @model = @current_model_name.to_s.constantize
 
-      @associate_model_names = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
+      @associate_model_names = @model.reflect_on_all_associations().collect{ |item| item.class_name.to_sym}
 
       # 現在のモデル + 関連モデル情報取得
       @table_columns = {}
@@ -166,26 +177,33 @@ class CrudController < ApplicationController
 
     def search_params
       hash = {}
-      return hash if !params[:search] || !params[:search].respond_to?(:require)
-      params.require(:search).permit(@fields[@current_model_name].keys).each do |key, value|
-        hash[key.to_sym] = value
+      return hash if !params[:search] || !params[:search][@current_model_name] || !params[:search][@current_model_name].respond_to?(:require)
+      params.require(:search).each do |model_name, item|
+        hash[model_name.to_sym] = {}
+        item.permit(@fields[model_name.to_sym].keys).each do |key, value|
+          hash[model_name.to_sym][key.to_sym] = value
+        end
       end
       return hash
     end
 
     def ransack_search_params
       hash = {}
-      search_params.each do |key, value|
-        field = key.to_s
-        case @fields[@current_model_name][key][:type]
-        when :string, :text
-          name = field + '_cont'
-        when :integer, :datetime, :boolean
-          name = field + '_in'
-        else
-          Rails.logger.debug('kokokita')
+      search_params.each do |model_name, item|
+        hash[model_name] = {}
+        item.each do |key, value|
+          field = key.to_s
+          case @fields[model_name][key][:type]
+          when :string, :text
+            name = field + '_cont'
+          when :integer, :datetime, :boolean
+            name = field + '_in'
+          else
+            Rails.logger.debug('kokokita')
+          end
+          hash[name.to_sym] = value
+          # hash[(model_name.to_s.tableize + '_' + name).to_sym] = value
         end
-        hash[name.to_sym] = value
       end
       return hash
     end

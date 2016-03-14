@@ -49,12 +49,10 @@
             <td>
               <% if item[:model] == @current_model_name %>
                 <% value = datum.send(item[:field].to_s) %>
-              <% elsif item[:model] == :Author %>
-                <% value = datum.Author ? datum.Author.send(item[:field].to_s) : "" %>
-              <% elsif item[:model] == :Article %>
-                <% value = datum.Article ? datum.Article.send(item[:field].to_s) : "" %>
-              <% elsif item[:model] == :Comment %>
-                <% value = datum.Comment.first ? datum.Comment.first.send(item[:field].to_s) : "" %>
+              <% elsif associate_type(@current_model_name, item[:model]) == :belongs_to %>
+                <% value = datum.send(item[:model].to_s) ? datum.send(item[:model].to_s).send(item[:field].to_s) : "" %>
+              <% elsif associate_type(@current_model_name, item[:model]) == :has_many %>
+                <% value = datum.send(item[:model].to_s).first ? datum.send(item[:model].to_s).first.send(item[:field].to_s) : "" %>
               <% end %>
               <% if config[:options] %>
                 <% value = config[:options][value] %>

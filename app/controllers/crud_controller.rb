@@ -111,11 +111,25 @@ class CrudController < ApplicationController
       # 現在のモデル + 関連モデル情報取得
       @table_columns = {}
       @fields = {}
+      @associate_models = {}
       ([@current_model_name] + @associate_model_names).each do |model_name|
-        model_name.to_s.constantize
-        @table_columns[model_name] = Module.const_get(model_name.to_s).columns
+
+        # モデルごとのアソシエーション情報を保持
+        model = model_name.to_s.constantize
+        @associate_models[model_name] = []
+        @model.reflect_on_all_associations().each do |item|
+          case item.class.to_s.split('::').last
+            when 'HasManyReflection'
+              type = :has_many
+            when 'BelongsToReflection'
+              type = :belongs_to
+            else
+          end
+          @associate_models[model_name].push({type: type, class_name: item.class_name.to_sym})
+        end
 
         # テーブルのフィールド回す
+        @table_columns[model_name] = Module.const_get(model_name.to_s).columns
         @fields[model_name] = {}
         @table_columns[model_name].each do |item|
           field_name = item.name
@@ -132,17 +146,14 @@ class CrudController < ApplicationController
 
             # options 項目取得
             if options = field_config[:options]
-              model = options[:model].constantize
 
               # select の options 選択項目
-              @fields[model_name][field][:options] = Hash[*model.pluck(options[:value], options[:label]).flatten]
+              @fields[model_name][field][:options] = Hash[*options[:model].constantize.pluck(options[:value], options[:label]).flatten]
             end
           end
         end
 
       end
-
-
 
       # 全モデル情報取得
       @all_models = {}
@@ -211,4 +222,5 @@ class CrudController < ApplicationController
 #      Rails.logger.error(hash.inspect)
       return hash
     end
+
 end

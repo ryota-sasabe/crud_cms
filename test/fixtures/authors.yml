@@ -1,49 +1,49 @@
-people1:
+author1:
   id: 1
   name: Ryota Sasabe
   email: saytrm@gmail.com
 
-people2:
+author2:
   id: 2
   name: Taro Yamada
   email: taro@gmail.com
 
-people3:
+author3:
   name: Hanako Sato
   email: hanako@gmail.com
 
-people4:
+author4:
   name: Ichiro Tanaka
   email: ichiro@gmail.com
 
-people5:
+author5:
   name: Jiro Suzuki
   email: jiro@gmail.com
 
-people6:
+author6:
   name: Saburo Saito
   email: saburo@gmail.com
 
-people7:
+author7:
   name: Shichiro Takahashi
   email: shichiro@gmail.com
 
-people8:
+author8:
   name: Hachiro Kato
   email: hachiro@gmail.com
 
-people9:
+author9:
   name: Kuro Kimura
   email: kimura@gmail.com
 
-people10:
+author10:
   name: Takashi Yamaguchi
   email: yamaguchi@gmail.com
 
-people11:
+author11:
   name: Yuki Tsuchida
   email: tsuchida@gmail.com
 
-people12:
+author12:
   name: Kota Ozeki
   email: ozeki@gmail.com

@@ -1,0 +1,14 @@
+comment1:
+  id: 1
+  article_id: 1
+  comment: 記事1に対してのコメント1!!
+
+comment2:
+  id: 2
+  article_id: 1
+  comment: 記事1に対してのコメント2!!
+
+comment3:
+  id: 3
+  article_id: 2
+  comment: 記事2に対してのコメント1!!

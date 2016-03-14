@@ -5,11 +5,32 @@ article1:
   meta_keywords: メタキー1
   meta_description: メタデスクリプション1
   contents: 記事本文1記事本文記事本文記事本文記事本文
-  writer_id: 1
+  author_id: 1
 
 article2:
   title: タイトル2
   meta_keywords: メタキー2
   meta_description: メタデスクリプション2
   contents: 記事本文1記事本文記事本文記事本文記事本文
-  writer_id: 1
+  author_id: 1
+
+article3:
+  title: タイトル3
+  meta_keywords: メタキー3
+  meta_description: メタデスクリプション3
+  contents: 記事本文1記事本文記事本文記事本文記事本文
+  author_id: 1
+
+article4:
+  title: タイトル4
+  meta_keywords: メタキー4
+  meta_description: メタデスクリプション4
+  contents: 記事本文1記事本文記事本文記事本文記事本文
+  author_id: 2
+
+article5:
+  title: タイトル5
+  meta_keywords: メタキー5
+  meta_description: メタデスクリプション5
+  contents: 記事本文1記事本文記事本文記事本文記事本文
+  author_id: 2

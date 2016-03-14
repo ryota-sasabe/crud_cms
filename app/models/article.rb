@@ -1,4 +1,4 @@
 class Article < ActiveRecord::Base
-  belongs_to :person, foreign_key: :writer_id
-
+  has_many :Comment
+  belongs_to :Author, foreign_key: :author_id
 end

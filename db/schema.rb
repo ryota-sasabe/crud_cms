@@ -11,7 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151103080142) do
+ActiveRecord::Schema.define(version: 20160314081055) do
+
+  create_table "active_crud_tests", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "articles", force: :cascade do |t|
     t.string   "title"
@@ -19,17 +25,24 @@ ActiveRecord::Schema.define(version: 20151103080142) do
     t.string   "meta_description"
     t.text     "contents"
     t.datetime "publish_date"
-    t.integer  "writer_id"
+    t.integer  "author_id"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
   end
 
-  create_table "people", force: :cascade do |t|
+  create_table "authors", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
     t.string   "hashed_password"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer  "article_id"
+    t.string   "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end

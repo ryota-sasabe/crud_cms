@@ -74,17 +74,20 @@ class CrudController < ApplicationController
       crud_config[:model][:Article][:publish_date] = {
         label: '公開日'
       }
-      crud_config[:model][:Article][:writer_id] = {
+      crud_config[:model][:Article][:author_id] = {
         label: '執筆者ID',
         options: {
-          model: 'Person',
+          model: 'Author',
           label: 'name',
           value: 'id',
         }
       }
 
-      crud_config[:model][:Person] = {}
-      crud_config[:model][:Person][:table_label] = '人'
+      crud_config[:model][:Author] = {}
+      crud_config[:model][:Author][:table_label] = '著者'
+
+      crud_config[:model][:Comment] = {}
+      crud_config[:model][:Comment][:table_label] = 'コメント'
 
       @database = params[:database]
       @current_model_name = params[:model]
@@ -122,8 +125,8 @@ class CrudController < ApplicationController
       # モデルが存在するもののみに限定
       # ただし、モデル名がテーブル名の単数系になっていないと取得できない
       @all_models = {}
-      ActiveRecord::Base.subclasses.each do |model_class|
-        model_name = model_class.table_name.classify
+      crud_config[:model].each do |model, item|
+        model_name = model.to_s
         logger.debug(model_name)
         begin
           model_name.constantize
@@ -167,6 +170,7 @@ class CrudController < ApplicationController
         name = (key.to_s + '_cont').to_sym
         hash[name] = value
       end
+#      Rails.logger.error(hash.inspect)
       return hash
     end
 end

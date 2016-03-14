@@ -11,7 +11,7 @@
     end
   %>
 
-  <%= form_tag("/#{@database}/#{@current_model_name}/#{@id}/#{form_action}", method: form_method ) do %>
+  <%= form_tag("/#{@database}/#{@current_model_name.to_s}/#{@id}/#{form_action}", method: form_method ) do %>
 
     <%# エラーメッセージ %>
     <div class="form-group">
@@ -27,9 +27,9 @@
     </div>
 
     <%# 入力項目 %>
-    <% @fields.each do |field, config| %>
+    <% @fields[@current_model_name].each do |field, config| %>
       <% field_name = field.to_s %>
-      <% name = "#{@current_model_name}[#{field_name}]" %>
+      <% name = "#{@current_model_name.to_s}[#{field_name}]" %>
 
       <% if action == :new %>
         <% next if field.in?([:id, :created_at, :updated_at]) %>

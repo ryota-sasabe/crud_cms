@@ -5,25 +5,25 @@
 <%= paginate @data %>
 <p><%= page_entries_info @data %></p>
 
-<%= form_tag("/#{@database}/#{@current_model_name}", method: 'get') do %>
+<%= form_tag("/#{@database}/#{@current_model_name.to_s}", method: 'get') do %>
   <table class="table table-striped">
     <tr>
       <th>選択</th>
       <%# フィールド見出し %>
-      <% @list_fields.each do |field| %>
-      <% config = @fields[field] %>
-        <th><%= sortable field.to_s, config[:label] %><i class="icon-arrow-up"></i></th>
+      <% @list_fields.each do |item| %>
+        <% config = @fields[item[:model]][item[:field]] %>
+        <th><%= sortable item[:field].to_s, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
 
     <%# 検索フィールド %>
     <tr>
       <td><%= submit_tag("Search") %></td>
-      <% @list_fields.each do |field| %>
-        <% config = @fields[field] %>
+      <% @list_fields.each do |item| %>
+        <% config = @fields[item[:model]][item[:field]] %>
         <td>
-          <% name = "search[#{field.to_s}]" %>
-          <% value = @search[field] || nil %>
+          <% name = "search[#{item[:model]}][#{item[:field].to_s}]" %>
+          <% value = nil #@search[item[:model]][item[:field]] || nil %>
           <% if config[:options] %>
             <%= select_tag name, options_for_select(config[:options].invert, :selected => value), :include_blank => true %>
           <% else %>
@@ -44,14 +44,22 @@
     <% @data.each do |datum| %>
       <tr>
         <td>[ ]</td>
-        <% @list_fields.each do |field| %>
-            <% config = @fields[field] %>
+        <% @list_fields.each do |item| %>
+            <% config = @fields[item[:model]][item[:field]] %>
             <td>
-              <% value = eval('datum.' + field.to_s) %>
+              <% if item[:model] == @current_model_name %>
+                <% value = datum.send(item[:field].to_s) %>
+              <% elsif item[:model] == :Author %>
+                <% value = datum.Author ? datum.Author.send(item[:field].to_s) : "" %>
+              <% elsif item[:model] == :Article %>
+                <% value = datum.Article ? datum.Article.send(item[:field].to_s) : "" %>
+              <% elsif item[:model] == :Comment %>
+                <% value = datum.Comment.first ? datum.Comment.first.send(item[:field].to_s) : "" %>
+              <% end %>
               <% if config[:options] %>
                 <% value = config[:options][value] %>
               <% end %>
-              <% if field == :id %>
+              <% if item[:field] == :id %>
                 <%= link_to value, controller: 'crud', action: 'edit', id: value %>
               <% else %>
                   <%= value %>
@@ -65,12 +73,19 @@
 
 
 <h2>表示列選択</h2>
-  <% @fields.each do |field, config| %>
-    <% name = 'list_fields[' + field.to_s + ']' %>
-    <%= check_box_tag name, 1, @list_fields.include?(field) %><%= label_tag name, field.to_s %>
+<% @fields.each do |model_name, item| %>
+  <div>
+  <%= model_name %>
+  <% item.each do |field, config| %>
+    <% name = "list_fields[#{model_name.to_s}][#{field.to_s}]" %>
+    <%= check_box_tag name, 1, @list_fields.select { |line| line[:model] == model_name && line[:field] == field }.any? %><%= label_tag name, field.to_s %>
   <% end %>
-  <%= submit_tag("適用") %>
-<% end #/form_tag %>
+  </div>
+<% end %>
+
+<%= submit_tag("適用") %>
+<% end %>
+
 
 <h2>テーブル定義情報</h2>
 
@@ -81,7 +96,7 @@
     <% end %>
   </tr>
 
-  <% @columns.each do |item| %>
+  <% @table_columns[@current_model_name].each do |item| %>
       <tr>
         <% @column_properties.each do |property| %>
             <td><%= eval('item.' + property) %></td>

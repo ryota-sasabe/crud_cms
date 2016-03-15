@@ -1,6 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 article1:
+  id: 1
   title: タイトル1
   meta_keywords: メタキー1
   meta_description: メタデスクリプション1
@@ -8,6 +9,7 @@ article1:
   author_id: 1
 
 article2:
+  id: 2
   title: タイトル2
   meta_keywords: メタキー2
   meta_description: メタデスクリプション2
@@ -15,6 +17,7 @@ article2:
   author_id: 1
 
 article3:
+  id: 3
   title: タイトル3
   meta_keywords: メタキー3
   meta_description: メタデスクリプション3
@@ -22,6 +25,7 @@ article3:
   author_id: 1
 
 article4:
+  id: 4
   title: タイトル4
   meta_keywords: メタキー4
   meta_description: メタデスクリプション4
@@ -29,6 +33,7 @@ article4:
   author_id: 2
 
 article5:
+  id: 5
   title: タイトル5
   meta_keywords: メタキー5
   meta_description: メタデスクリプション5

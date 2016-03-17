@@ -12,7 +12,7 @@
       <%# フィールド見出し %>
       <% @list_fields.each do |item| %>
         <% config = @fields[item[:model]][item[:field]] %>
-        <th><%= sortable item[:field].to_s, config[:label] %><i class="icon-arrow-up"></i></th>
+        <th><%= sortable item[:model].to_s, item[:field].to_s, config[:label] %><i class="icon-arrow-up"></i></th>
       <% end %>
     </tr>
 
@@ -52,7 +52,7 @@
               <% elsif associate_type(@current_model_name, item[:model]) == :belongs_to %>
                 <% value = datum.send(item[:model].to_s) ? datum.send(item[:model].to_s).send(item[:field].to_s) : "" %>
               <% elsif associate_type(@current_model_name, item[:model]) == :has_many %>
-                <% value = datum.send(item[:model].to_s).first ? datum.send(item[:model].to_s).first.send(item[:field].to_s) : "" %>
+                <% value = 'many' #datum.send(item[:model].to_s).first ? datum.send(item[:model].to_s).first.send(item[:field].to_s) : "" %>
               <% end %>
               <% if config[:options] %>
                 <% value = config[:options][value] %>

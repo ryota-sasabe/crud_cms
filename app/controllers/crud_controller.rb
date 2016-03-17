@@ -26,7 +26,8 @@ class CrudController < ApplicationController
     @search = search_params
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
-    @data = @model.search(ransack_search_params).result.includes(includes)
+    @model = search_model(@model)
+    @data = @model.includes(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
@@ -181,12 +182,12 @@ class CrudController < ApplicationController
     end
 
     def sort_column
-      return 'id' if params[:sort].nil?
+      return 'articles.id' if params[:sort].nil?
       @fields[@current_model_name].keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
     end
 
     def sort_direction
-      %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+      %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
     end
 
     def search_params
@@ -221,6 +222,24 @@ class CrudController < ApplicationController
       end
 #      Rails.logger.error(hash.inspect)
       return hash
+    end
+
+    def search_model (model)
+      search_params.each do |model_name, item|
+        item.each do |key, value|
+          field = key.to_s
+          next if value.empty?
+          case @fields[model_name][key][:type]
+          when :string, :text
+            model = model.where("#{model_name.to_s.tableize}.#{key}" => value)
+          when :integer, :datetime, :boolean
+            model = model.where("#{model_name.to_s.tableize}.#{key}" => value)
+          else
+            Rails.logger.debug('kokokita')
+          end
+        end
+      end
+      return model
     end
 
 end

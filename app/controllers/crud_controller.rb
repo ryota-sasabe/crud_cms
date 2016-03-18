@@ -182,8 +182,11 @@ class CrudController < ApplicationController
     end
 
     def sort_column
-      return 'articles.id' if params[:sort].nil?
-      @fields[@current_model_name].keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
+      default_sort = "#{@current_model_name.to_s.tableize}.id"
+      return default_sort if params[:sort].nil?
+      params[:sort].match(/(\w+)\[(\w+)\]/).to_a
+      whole, model, field = params[:sort].match(/(\w+)\[(\w+)\]/).to_a
+      @fields[model.to_sym].keys.include?(field.to_sym) ? "#{model.tableize}.#{field}" : default_sort
     end
 
     def sort_direction

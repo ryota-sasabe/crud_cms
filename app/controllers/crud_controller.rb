@@ -27,7 +27,7 @@ class CrudController < ApplicationController
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
     @model = search_model(@model)
-    @data = @model.includes(includes)
+    @data = @model.joins(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
@@ -107,12 +107,13 @@ class CrudController < ApplicationController
 
       @model = @current_model_name.to_s.constantize
 
-      @associate_model_names = @model.reflect_on_all_associations().collect{ |item| item.class_name.to_sym}
+      @associate_model_names = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
 
       # 現在のモデル + 関連モデル情報取得
       @table_columns = {}
       @fields = {}
       @associate_models = {}
+      @has_many_associations = []
       ([@current_model_name] + @associate_model_names).each do |model_name|
 
         # モデルごとのアソシエーション情報を保持
@@ -122,6 +123,7 @@ class CrudController < ApplicationController
           case item.class.to_s.split('::').last
             when 'HasManyReflection'
               type = :has_many
+              @has_many_associations.push(item.class_name.to_sym)
             when 'BelongsToReflection'
               type = :belongs_to
             else
@@ -202,28 +204,6 @@ class CrudController < ApplicationController
           hash[model_name.to_sym][key.to_sym] = value
         end
       end
-      return hash
-    end
-
-    def ransack_search_params
-      hash = {}
-      search_params.each do |model_name, item|
-        hash[model_name] = {}
-        item.each do |key, value|
-          field = key.to_s
-          case @fields[model_name][key][:type]
-          when :string, :text
-            name = field + '_cont'
-          when :integer, :datetime, :boolean
-            name = field + '_in'
-          else
-            Rails.logger.debug('kokokita')
-          end
-          hash[name.to_sym] = value
-          # hash[(model_name.to_s.tableize + '_' + name).to_sym] = value
-        end
-      end
-#      Rails.logger.error(hash.inspect)
       return hash
     end
 

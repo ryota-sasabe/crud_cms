@@ -24,15 +24,12 @@ class CrudController < ApplicationController
 
     # 検索
     @search = search_params
-
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
     @model = search_model(@model)
-    @data = @model.joins(includes)
+    @data = @model.select(select_model).joins(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
-
-
     @column_properties = %w{name type sql_type null limit precision scale default}
   end
 
@@ -113,7 +110,7 @@ class CrudController < ApplicationController
       @table_columns = {}
       @fields = {}
       @associate_models = {}
-      @has_many_associations = []
+      @has_many_associations = @model.reflect_on_all_associations(:has_many).collect{ |item| item.class_name.to_sym}
       ([@current_model_name] + @associate_model_names).each do |model_name|
 
         # モデルごとのアソシエーション情報を保持
@@ -123,7 +120,6 @@ class CrudController < ApplicationController
           case item.class.to_s.split('::').last
             when 'HasManyReflection'
               type = :has_many
-              @has_many_associations.push(item.class_name.to_sym)
             when 'BelongsToReflection'
               type = :belongs_to
             else
@@ -223,6 +219,18 @@ class CrudController < ApplicationController
         end
       end
       return model
+    end
+
+    def select_model
+      selects = @list_fields.collect{ |item| "#{item[:model].to_s.tableize}.#{item[:field].to_s}"}
+
+      @has_many_associations.each do |model|
+        one = @current_model_name.to_s.tableize
+        many = model.to_s.tableize
+        selects.push(model.to_s.constantize.select("count(#{many}.id)").where("#{many}.#{@current_model_name.to_s.foreign_key} = #{one}.id").as("#{many}_count").to_sql)
+      end
+
+      return selects
     end
 
 end

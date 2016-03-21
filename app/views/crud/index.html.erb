@@ -72,7 +72,10 @@
           </td>
         <% end %>
         <% @has_many_associations.each do |model| %>
-          <td><%= link_to model.to_s, controller: 'crud', action: 'index', model: model.to_s, "search[#{model.to_s}[#{@current_model_name.to_s.foreign_key}]]" => datum.send('id') %></td>
+          <td>
+            <%= datum.send("#{model.to_s.tableize}_count") %>
+            <%= link_to '[link]', controller: 'crud', action: 'index', model: model.to_s, "search[#{model.to_s}[#{@current_model_name.to_s.foreign_key}]]" => datum.send('id') %>
+          </td>
         <% end %>
       </tr>
     <% end %>

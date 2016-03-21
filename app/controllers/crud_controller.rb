@@ -26,6 +26,7 @@ class CrudController < ApplicationController
     @search = search_params
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
     @model = search_model(@model)
+
     @data = @model.select(select_model).joins(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
@@ -108,13 +109,13 @@ class CrudController < ApplicationController
 
 
       @model = @current_model_name.to_s.constantize
-      @associate_model_names = @model.reflect_on_all_associations().inject([]) { |arr, item| arr << item.class_name.to_sym if !item.options.include?(:through); arr }
+      @associate_model_names = @model.reflect_on_all_associations(:belongs_to).inject([]) { |arr, item| arr << item.class_name.to_sym if !item.options.include?(:through); arr }
 
       # 現在のモデル + 関連モデル情報取得
       @table_columns = {}
       @fields = {}
       @associate_models = {}
-      @has_many_associations = @model.reflect_on_all_associations(:has_many).collect{ |item| item.class_name.to_sym}
+      @has_many_associations = @model.reflect_on_all_associations(:has_many).inject([]) { |arr, item| arr << item.class_name.to_sym if !item.options.include?(:through); arr }
       ([@current_model_name] + @associate_model_names).each do |model_name|
 
         # モデルごとのアソシエーション情報を保持
@@ -234,7 +235,6 @@ class CrudController < ApplicationController
         many = model.to_s.tableize
         selects.push(model.to_s.constantize.select("count(#{many}.id)").where("#{many}.#{@current_model_name.to_s.foreign_key} = #{one}.id").as("#{many}_count").to_sql)
       end
-
       return selects
     end
 

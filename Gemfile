@@ -39,4 +39,6 @@ group :development do
   gem 'pry-byebug'
   gem 'spring'
   gem "meta_request"
+  gem "better_errors"
+  gem 'binding_of_caller'
 end

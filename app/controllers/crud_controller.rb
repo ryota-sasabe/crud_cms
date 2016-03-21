@@ -99,14 +99,18 @@ class CrudController < ApplicationController
 
       crud_config[:model][:Comment] = {}
       crud_config[:model][:Comment][:table_label] = 'コメント'
+      crud_config[:model][:Tag] = {}
+      crud_config[:model][:Tag][:table_label] = 'タグ'
+
+      crud_config[:model][:ArticlesTag] = {}
+      crud_config[:model][:ArticlesTag][:table_label] = '記事とタグの関連'
 
       @database = params[:database]
       @current_model_name = params[:model].to_sym
 
 
       @model = @current_model_name.to_s.constantize
-
-      @associate_model_names = @model.reflect_on_all_associations().collect{ |item| item.class_name.to_sym}
+      @associate_model_names = @model.reflect_on_all_associations().inject([]) { |arr, item| arr << item.class_name.to_sym if !item.options.include?(:through); arr }
 
       # 現在のモデル + 関連モデル情報取得
       @table_columns = {}
@@ -118,6 +122,7 @@ class CrudController < ApplicationController
         model = model_name.to_s.constantize
         @associate_models[model_name] = []
         @model.reflect_on_all_associations().each do |item|
+          next if item.options.include?(:through);
           case item.class.to_s.split('::').last
             when 'HasManyReflection'
               type = :has_many
@@ -176,7 +181,7 @@ class CrudController < ApplicationController
       fields = @fields[@current_model_name].keys
       fields.delete_if {|field| field.in?(@non_editable_fields)}
 #      logger.debug(fields.inspect)
-      params.require(@current_model_name).permit(fields)
+      params.require(@current_model_name.to_s.underscore).permit(fields)
 
     end
 

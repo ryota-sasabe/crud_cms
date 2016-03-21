@@ -25,6 +25,7 @@ gem 'momentjs-rails'
 gem 'bootstrap3-datetimepicker-rails'
 
 gem 'font-awesome-rails'
+gem 'simple_form'
 gem 'ransack'
 
 group :development, :test do

@@ -11,8 +11,22 @@
     end
   %>
 
-  <%= form_tag("/#{@database}/#{@current_model_name.to_s}/#{@id}/#{form_action}", method: form_method ) do %>
+  <%#= form_tag(, method: form_method ) do %>
 
+  <%= simple_form_for @data, :url => "/#{@database}/#{@current_model_name.to_s}/#{@id}/#{form_action}", :method => form_method do |f| %>
+    <% @model.column_names.each do |field| %>
+      <% next if field.in?([:id, :created_at, :updated_at]) %>
+      <% if @model.reflect_on_all_associations(:belongs_to).collect {|item| item.options[:foreign_key] }.include?(field.to_sym) %>
+      <%= f.association :Author %>
+      <% else %>
+      <%= f.input field.to_sym %>
+      <% end %>
+    <% end %>
+    <%= f.button :submit %>
+
+<%
+=begin
+%>
     <%# エラーメッセージ %>
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-10">
@@ -77,6 +91,8 @@
     <% end %>
 
     <td><%= submit_tag("登録") %></td>
-
+<%
+=end
+%>
   <% end %>
 </div>

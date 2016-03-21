@@ -26,7 +26,8 @@ class CrudController < ApplicationController
     @search = search_params
 
     includes = @model.reflect_on_all_associations(:belongs_to).collect{ |item| item.class_name.to_sym}
-    @data = @model.search(ransack_search_params).result.includes(includes)
+    @model = search_model(@model)
+    @data = @model.joins(includes)
                 .order(sort_column + ' ' + sort_direction)
                 .page(params[:page])
                 .per(10)
@@ -116,6 +117,7 @@ class CrudController < ApplicationController
       @table_columns = {}
       @fields = {}
       @associate_models = {}
+      @has_many_associations = []
       ([@current_model_name] + @associate_model_names).each do |model_name|
 
         # モデルごとのアソシエーション情報を保持
@@ -126,6 +128,7 @@ class CrudController < ApplicationController
           case item.class.to_s.split('::').last
             when 'HasManyReflection'
               type = :has_many
+              @has_many_associations.push(item.class_name.to_sym)
             when 'BelongsToReflection'
               type = :belongs_to
             else
@@ -186,12 +189,15 @@ class CrudController < ApplicationController
     end
 
     def sort_column
-      return 'id' if params[:sort].nil?
-      @fields[@current_model_name].keys.include?(params[:sort].to_sym) ? params[:sort] : 'id'
+      default_sort = "#{@current_model_name.to_s.tableize}.id"
+      return default_sort if params[:sort].nil?
+      params[:sort].match(/(\w+)\[(\w+)\]/).to_a
+      whole, model, field = params[:sort].match(/(\w+)\[(\w+)\]/).to_a
+      @fields[model.to_sym].keys.include?(field.to_sym) ? "#{model.tableize}.#{field}" : default_sort
     end
 
     def sort_direction
-      %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+      %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
     end
 
     def search_params
@@ -206,26 +212,22 @@ class CrudController < ApplicationController
       return hash
     end
 
-    def ransack_search_params
-      hash = {}
+    def search_model (model)
       search_params.each do |model_name, item|
-        hash[model_name] = {}
         item.each do |key, value|
           field = key.to_s
+          next if value.empty?
           case @fields[model_name][key][:type]
           when :string, :text
-            name = field + '_cont'
+            model = model.where("#{model_name.to_s.tableize}.#{key}" => value)
           when :integer, :datetime, :boolean
-            name = field + '_in'
+            model = model.where("#{model_name.to_s.tableize}.#{key}" => value)
           else
             Rails.logger.debug('kokokita')
           end
-          hash[name.to_sym] = value
-          # hash[(model_name.to_s.tableize + '_' + name).to_sym] = value
         end
       end
-#      Rails.logger.error(hash.inspect)
-      return hash
+      return model
     end
 
 end

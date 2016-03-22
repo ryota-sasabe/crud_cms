@@ -14,10 +14,10 @@
   <%#= form_tag(, method: form_method ) do %>
 
   <%= simple_form_for @data, :url => "/#{@database}/#{@current_model_name.to_s}/#{@id}/#{form_action}", :method => form_method do |f| %>
-    <% @model.column_names.each do |field| %>
+    <% @model.column_names.map(&:to_sym).each do |field| %>
       <% next if field.in?([:id, :created_at, :updated_at]) %>
-      <% if @model.reflect_on_all_associations(:belongs_to).collect {|item| item.options[:foreign_key] }.include?(field.to_sym) %>
-      <%= f.association :Author %>
+      <% if model_name = foreign_key_to_modelname(@current_model_name, field) %>
+      <%= f.association model_name %>
       <% else %>
       <%= f.input field.to_sym %>
       <% end %>

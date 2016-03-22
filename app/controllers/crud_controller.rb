@@ -32,6 +32,7 @@ class CrudController < ApplicationController
                 .page(params[:page])
                 .per(10)
     @column_properties = %w{name type sql_type null limit precision scale default}
+
   end
 
   def show
